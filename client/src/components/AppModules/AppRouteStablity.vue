@@ -19,7 +19,6 @@ export default {
   mounted() {
     // this.test();
     this.$axios.get("pred_station_data").then((res) => {
-      // console.log(res.data);
       this.test(res.data);
     });
   },
@@ -140,7 +139,7 @@ export default {
       let gx = g.append("g").call(xAxis, x);
 
       // add the y Axis
-      var y = d3.scaleLinear().range([height, 0]).domain([-3, 3]);
+      var y = d3.scaleLinear().range([height, 0]).domain([0, 23]);
 
       svg
         .append("g")

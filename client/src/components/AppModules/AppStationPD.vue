@@ -32,7 +32,6 @@ export default {
       this.data = res.data
     }).then(()=>{
         this.stations.forEach((d,i)=>{
-        // console.log(res.data[d]);
         this.test(this.data[d], "#SPD_"+i, i, d);
       })
     });
@@ -129,7 +128,7 @@ export default {
         g
           .attr("transform", `translate(${margin.left},0)`)
           .call(d3.axisLeft(y).ticks(5))
-          .call((g) => g.select(".domain").remove());
+          //.call((g) => g.select(".domain").remove());
 
       let gx = svg.append("g").call(xAxis, x);
 
@@ -160,7 +159,6 @@ export default {
       //     }
       // })
 
-      // console.log(data);
 
       let g = svg
         .append("g")

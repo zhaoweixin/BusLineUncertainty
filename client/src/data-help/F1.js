@@ -13,7 +13,6 @@ export default class F1{
                  stationArray.push(data[i].station_no);
              }
          }
-        //  console.log(stationArray)
          let all=[]
          for(let i=0;i<stationArray.length-1;i++)
          {
@@ -59,7 +58,6 @@ export default class F1{
                  mc['point']=all[p]['data'][-1]
                  po.push(mc)
          }
-        //  console.log(wantObject)
          return all
     }
 
@@ -76,7 +74,6 @@ export default class F1{
                  stationArray.push(data[i].station_no);
              }
          }
-        //  console.log(stationArray)
          let all=[]
          for(let i=0;i<stationArray.length-1;i++)
          {

@@ -63,13 +63,10 @@ export default class GTB
             dLon = (dLon * 180.0) / (a / sqrtMagic * Math.cos(radLat) * pi);
             var y1 = point[1] + dLat;
             var x1 = point[0] + dLon;
-            // console.log(x1);
-            // console.log(y1);
             // var gg = new BMap.Point(x1, y1);
             var gg=[]
             gg.push(x1);
             gg.push(y1);
-            // console.log(gg);
             return gg;
 
         }

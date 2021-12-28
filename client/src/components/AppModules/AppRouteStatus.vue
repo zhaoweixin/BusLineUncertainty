@@ -52,7 +52,6 @@ export default {
   },
   mounted() {
            var data = this.$axios.get("http://localhost:8080/static/1207.json").then((data) =>{
-        //    console.log(data.data)
         var array = data.data;
 
         let car = Draw.getCar(array);
@@ -61,12 +60,10 @@ export default {
 
         //上行线的数组
         let darray = Draw.getArray(array);
-        // console.log(darray);
-
+        console.log('darray:',darray)
         //下行线的数组
         let newarray = Draw.newgetArray(array);
-        // console.log(newarray)
-
+        console.log('newarray:',newarray)
         //这里是获得上行线
         const pict = new Draw.constructor([], car, date, station, darray)
           .init()

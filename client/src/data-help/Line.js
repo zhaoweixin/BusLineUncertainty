@@ -19,9 +19,6 @@ export default class mapbox {
    // zoom：缩放等级
    //id,coordinateData,Speed,
    //containerid容器id
-   //  addLine112(){
-   //    console.log(1)
-   //  }
 
    //用于存储图层id
 
@@ -37,7 +34,6 @@ export default class mapbox {
       var map;
       var that = this;
       var ArrayLen = this.coordinateData[0].feature.data.length;
-      // console.log(ArrayLen)
 
       //我们要在这里定义好对象数组
       //先设置好features对象的格式
@@ -54,7 +50,6 @@ export default class mapbox {
          object.geometry.coordinates=that.coordinateData[0].feature.data[i].data;
          newFeature.push(object)
          }
-         // console.log(newFeature)
          return newFeature;
       }
 
@@ -70,24 +65,19 @@ export default class mapbox {
             zoom: this.zoom
          });
 
-         // console.log(map)  
          return that;
       }
       //添加单挑线路,我这里默认的是传入一个有多个坐标数组的对象,会飞到你添加的路线中
       this.addLine = function (num) {
-         // console.log(123)
          var gain;
-         // console.log(that.coordinateData)
          for (var i = 0; i < ArrayLen; i++) {
             if (that.coordinateData[0].feature.data[i]["line-name"] == num) {
                gain = that.coordinateData[0].feature.data[i];
-               // console.log(gain)
             }
          }
          
          //添加到图层id数组当中去
          toogleableLayerIds.push(gain['line-name'])
-         // console.log('route'+gain['line-name'])
          map.on('load', function () {
             
             let iid='route'+gain['line-name']
@@ -124,7 +114,6 @@ export default class mapbox {
             //    center:[gain.data[0][0],gain.data[0][1]]
             // })
             // })
-            // console.log(toogleableLayerIds)
 
             //添加点击事件
             var popup = new mapboxgl.Popup({
@@ -133,13 +122,10 @@ export default class mapbox {
                });
 
             map.on('mouseenter',iid,function(e){
-               // console.log( e.features[0].geometry.coordinates)
                map.getCanvas().style.cursor = 'pointer';
 
                // var coordinates=e.features[0].geometry.coordinates.slice()
-               // console.log(coordinates[0])
                var newRouteId=e.features[0].layer.id
-               // console.log(newRouteId)
                // while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
                //    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
                // }
@@ -169,11 +155,9 @@ export default class mapbox {
       this.delLine=function(routeId){
 
          map.on('load',function(){
-            // console.log(toogleableLayerIds)
             for(var i=0;i<toogleableLayerIds.length;i++)
             {
                 var newid=toogleableLayerIds[i]
-               //  console.log(1)
                 if(newid==routeId)
                 {
                  var visibility=map.getLayoutProperty(newid,'visibility');
@@ -184,7 +168,6 @@ export default class mapbox {
                 }
             }
          })
-         // console.log(1)
           return that;
       }
 
@@ -196,11 +179,9 @@ export default class mapbox {
              //这里先获取图片的资源
              map.loadImage('http://localhost:8080/static/公交车.png',function(err,image){
                   //  map.addImage('carPoint',image)
-                  //  console.log(image)
                    //把这个图片资源传到vuex仓库当中
                   //  that.$store.state.img=image;
                   let mid = that.nc;
-                  // console.log(mid)
                   let newArray = { "type": "", "data": { "type": "", "features": "" } };
                   newArray.type = "geojson";
                   newArray.data.type = "FeatureCollection";
@@ -221,9 +202,7 @@ export default class mapbox {
                       newobject.geometry.coordinates = mid[i];
                       newidea.push(newobject);
                   }
-                  // console.log(newidea)
                   newArray.data.features = newidea;
-                  // console.log(newArray);
       
                   map.on("load", function () {
                       map.addLayer({
@@ -258,13 +237,11 @@ export default class mapbox {
          {
              newDataId.push(that.coordinateData[0].feature.data[i]['line-name'])
          }
-      //   console.log(newDataId)
         //获取一个综合字符串
         for(var i=0;i<newDataId.length;i++)
         {
               str+=newDataId[i];
         }
-         // console.log(str)
 
          LinesId=[];
          LinesId.push('mult-line'+str);
@@ -300,7 +277,6 @@ export default class mapbox {
       {     
            map.on('load',function(){
          //    var mubiao=map.querySourceFeatures(id,{})
-         //    console.log(mubiao)  
          //   })
          //   let layers=map.getStyle().layers;
 
@@ -311,25 +287,22 @@ export default class mapbox {
          //          var mylayers=layers[i]
          //       }
          //   }
-         //    console.log(mylayers['paint']['line-color'])
          
          let z=d3.scaleOrdinal(d3["schemeSet2"]).domain([]).range([0,1]);
         
           let kmin=Math.min(...valueArray)
           let kmax=Math.max(...valueArray)
-         //  console.log(1)
 
          //定义一个线性器
+         //let newline=d3.scaleQuantize().domain([kmin,kmax]).range(['#FFB6C1','#FA8072','#FF6347'])
           let newline=d3.scaleQuantize().domain([kmin,kmax]).range(['#FFB6C1','#FA8072','#FF6347'])
 
          
       //   ({key})=>z(newline(key))
          
-
+         console.log('value:', value, " ", newline(value))
           map.setPaintProperty(myid,'line-color',newline(value))
-         //   console.log(layers)
          //   for (var i = 0; i < layers.length; i++) {
-         //    console.log(layers[i]);
          })
           
          return that;
@@ -339,14 +312,10 @@ export default class mapbox {
       // 删除多条线路的图层即可,但是要传入多条路线的线路名称的字符串合集
       this.delLines=function(str){
           map.on('load',function(){
-            //  console.log(LinesId);
              var Lslen=LinesId.length
              for(var i=0;i<Lslen;i++)
              {
-                  // console.log(1)
-                  // console.log()
                   var realId=LinesId[i]
-                  // console.log(realId)
                   if(str==realId)
                   {
                      var visibility=map.getLayoutProperty(realId,'visibility');

@@ -20,9 +20,7 @@ export default {
   components: {},
   mounted() {
     this.$axios.get("ppf_data").then((res) => {
-      // console.log(res.data);
       this.stations = Object.keys(res.data).slice(0, 4);
-      // console.log(this.stations);
       this.test(res.data, this.stations);
     });
   },
@@ -234,7 +232,6 @@ export default {
         .attr("width", width - margin.left - margin.right)
         .attr("height", height);
        
-      //  console.log(stations)
 
       let g = svg
         .append("g")
@@ -264,7 +261,6 @@ export default {
         .join("g")
         .selectAll("rect")
         .data(d =>{
-          // console.log(d);
           return d
         })
         .join("rect")

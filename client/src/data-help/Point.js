@@ -34,8 +34,6 @@ export default class mapboxPoint {
             "text-anchor": "top"
         }
 
-        // console.log(LayerData)
-
         this.init = function () {
             mapboxgl.accessToken = key;
             map = new mapboxgl.Map({
@@ -51,12 +49,9 @@ export default class mapboxPoint {
             let mid = [];
             mid.push(lng);
             mid.push(lat);
-            // console.log(LayerData.source.data.features.geometry)
             LayerData.source.data.features[0].geometry.coordinates = mid;
-            // console.log(LayerData)
             map.on('load', function () {
                 map.addLayer(LayerData);
-                // console.log(LayerData.source.data.features[0].geometry)
             })
             return that;
         }
@@ -83,9 +78,7 @@ export default class mapboxPoint {
                 newobject.geometry.coordinates = mid[i];
                 newidea.push(newobject);
             }
-            // console.log(newidea)
             newArray.data.features = newidea;
-            // console.log(newArray);
 
             map.on("load", function () {
                 map.addLayer({

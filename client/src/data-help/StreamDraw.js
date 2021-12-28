@@ -11,6 +11,10 @@ export default class StreamDraw {
     //河流图 Station Stability View
     //分别对应 时间数组，站点数组和二维结果数组
     static getDraw(time, station, data) {
+        console.log('time', time)
+        console.log('station', station)
+        console.log('data', data)
+
         width = 950
         height = 205
         innerHeight = height - margin.top - margin.bottom
@@ -21,14 +25,11 @@ export default class StreamDraw {
         //这里获得一波置信区间的数组
         let yArray = []
         for (let i = 0; i < data.length; i++) {
-            // console.log(data[i])
             let mid = Object.values(data[i])
-            // console.log(mid)
             for (let u = 0; u < mid.length; u++) {
                 yArray.push(mid[u])
             }
         }
-        // console.log(yArray)
 
         //获得对应的日期格式
         // for(let i=0;i<time.length;i++)
@@ -37,7 +38,6 @@ export default class StreamDraw {
         // }
 
         // let test=parseFloat(time[0])
-        // console.log(test)
 
         //然后根据time数组和二维结果数组里面的做比例尺,这里的坐标轴不能这样加 因为有叠加
 
@@ -55,23 +55,20 @@ export default class StreamDraw {
                 midObject["" + j] = data[j][time[i]]
             }
             realData.push(midObject)
-        }
-        // console.log(realData)
-
-
+        } 
+        console.log('realdata', realData)
         var newA = Object.keys(realData[0])
         newA.splice(newA.length - 1, 1)
-        // console.log(newA)
 
-        const stack = d3.stack().keys(newA).offset(d3.stackOffsetWiggle)
-            .order(d3.stackOrderInsideOut)
+        const stack = d3.stack().keys(newA).offset(d3.stackOffsetNone)
+        
+        //.order(d3.stackOrderAppearance)
+        // d3.stackOffsetWiggle -> baseline in the middle
 
         let series = stack(realData)
-        // console.log(series)
-
-
+        // console.log('readData:', realData)
+        console.log('series:', series)
         //new Date('2000/01/01 '+d.data.date+':00')
-
 
         //怎么缩放？
         function zoomed(event) {
@@ -105,18 +102,14 @@ export default class StreamDraw {
         svg.call(zoom);
 
 
-
-
         let DateArray = []
         for (var i = 0; i < realData.length; i++) {
             DateArray.push(realData[i].date)
         }
-        // console.log(DateArray)
         let newDate = []
         for (let i = 0; i < DateArray.length; i++) {
             newDate.push('2000/01/01 ' + DateArray[i] + ':00');
         }
-        // console.log(newDate)
         //日期,我们这里统一填充为1900/01/01 xx:xx:xx的形式，只要不出现跨天的情况就没有问题
         let nwArray = []
         for (let i = 0; i < newDate.length; i++) {
@@ -124,30 +117,29 @@ export default class StreamDraw {
             mid = mid.getTime() / 1000;
             nwArray.push(mid)
         }
-        // console.log(nwArray)
 
         let nmax = Math.max(...nwArray);
         let nmin = Math.min(...nwArray);
-        // console.log(nmax)
-        // console.log(nmin)
 
         //坐标轴这里创建,这里的横轴是有问题的，但是我没想好怎么改   
         var xScale = d3.scaleTime().domain([new Date(newDate[0]), new Date(newDate[newDate.length - 1])]).range([0, innerWidth]);
         var yScale = d3.scaleLinear().domain([d3.min(series, d => d3.min(d, d => d[0])), d3.max(series, d => d3.max(d, d => d[1]))]).nice().range([innerHeight, 0]);
         var xAxis = (g, x) =>
-          g.attr("transform", `translate(${20},${height - margin.bottom})`).call(
+          g.attr("transform", `translate(${margin.left},${height - margin.bottom})`).call(
           d3.axisBottom(x)
           .tickFormat(d=>d3.timeFormat("%H:%M")(d))
           // .ticks(5)
           //.tickSizeOuter(0)
         );
         // let gx= g.append('g').call(xAxis).attr('transform', `translate(${0},${innerHeight})`);
-        let gx = svg.append("g").call(xAxis, xScale)
+        let gx = svg.append("g")
+            .call(xAxis, xScale)
 
         svg
         .append("defs")
         .append("clipPath")
         .attr("id", "new-clip-spd")
+        .attr('transform', `translate(${margin.left},${0})`)
         .append("rect")
         .attr("x", 20)
         .attr("width", width - margin.left - margin.right)
@@ -155,7 +147,8 @@ export default class StreamDraw {
         
 
         var yAxis = d3.axisLeft(yScale);
-        g.append('g').call(yAxis).call((g) => g.select(".domain").remove())
+        //g.append('g').call(yAxis).call((g) => g.select(".domain").remove())
+        g.append('g').call(yAxis)
 
         // const area = d3.area().x(d => xScale(new Date('2000/01/01 ' + d.data.date + ':00'))).y0(d => yScale(d[0])).y1(d => yScale(d[1])).curve(d3.curveCatmullRom.alpha(0.5))
         
@@ -181,7 +174,6 @@ export default class StreamDraw {
         for (let i = 0; i < keyArray.length; i++) {
             keyArray[i] = parseFloat(keyArray[i])
         }
-        // console.log(keyArray)
 
         let kmax = Math.max(...keyArray);
         let kmin = Math.min(...keyArray);

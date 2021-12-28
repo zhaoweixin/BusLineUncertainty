@@ -15,7 +15,6 @@ export default class Draw {
     //暂时没用到
     static getCar(real) {
         let car = [];
-        // console.log(real[0].date.substr(8,13))
         for (var i = 0; i < real.length; i++) {
             if (car.indexOf(real[i].car_flag) == -1) {
                 car.push(real[i].car_flag);
@@ -38,8 +37,8 @@ export default class Draw {
     static getDate(real) {
         let date = [];
         for (var i = 0; i < real.length; i++) {
-            if (date.indexOf(real[i].date.substr(8, 13) == -1)) {
-                date.push(parseFloat(real[i].date.substr(8, 13)))
+            if (date.indexOf(real[i].date.toString().substr(8, 13) == -1)) {
+                date.push(parseFloat(real[i].date.toString().substr(8, 13)))
             }
         }
         return date;
@@ -56,7 +55,7 @@ export default class Draw {
             //因为我们先只需要上行部分，其实这一块是应该在最初的csv文件里面处理好的，但是当时忘了，先完成功能，后面在进行优化
             if (real[i].trans_direction == 0) {
                 dataobject.car_id = real[i].car_flag;
-                dataobject.date = parseFloat(real[i].date.substr(8, 13));
+                dataobject.date = parseFloat(real[i].date.toString().substr(8, 13));
                 dataobject.station = parseFloat(real[i].station_no);
                 dataobject.trans_direction = 0;
             }
@@ -76,7 +75,7 @@ export default class Draw {
             dataobject = {}
             if (real[i].trans_direction == 1) {
                 dataobject.car_id = real[i].car_flag;
-                dataobject.date = parseFloat(real[i].date.substr(8, 13));
+                dataobject.date = parseFloat(real[i].date.toString().substr(8, 13));
                 dataobject.station = parseFloat(real[i].station_no);
                 dataobject.trans_direction = 1;
             }
@@ -104,11 +103,8 @@ export default class Draw {
 
         
 
-        // console.log(d3.max(this.station,d=>d))
-        // console.log(d3.max(this.station))
         //转换
         function sw(data) {
-            // console.log(data)
             let str = ""
             let one = parseInt(data / 10000);
             if (one == 0) {
@@ -123,7 +119,6 @@ export default class Draw {
             //     three = "00"
             // }
             str = str + one + ':' + two
-            // console.log(str)
             return str
         }
 
@@ -134,7 +129,6 @@ export default class Draw {
             var height = 300;
 
             // var containId=containerId
-            // console.log(containId)
 
             // var padding=60;
             margin = { left: 30, right: 30, top: 30, bottom: 30 }
@@ -156,7 +150,7 @@ export default class Draw {
 
             const g = svg.append('g').attr('id', 'maingroup').attr('transform', `translate(${margin.left},${margin.top})`)
 
-            const yAxis = d3.axisLeft(yScale).ticks(5);
+            const yAxis = d3.axisLeft(yScale).ticks(10);
             g.append('g').call(yAxis).call((g) => g.select(".domain").remove())
 
             const xAxis = d3.axisBottom(xScale).tickFormat(d => sw(d)).ticks(5);
@@ -177,7 +171,6 @@ export default class Draw {
             var height = 300;
 
             // var containId=containerId
-            // console.log(containId)
 
             // var padding=60;
             margin = { left: 30, right: 30, top: 30, bottom: 30 }
@@ -218,8 +211,11 @@ export default class Draw {
                     var cIndex = Math.round(Math.random() * 15);
                     color += cArray[cIndex];
                 }
-                colorArray[i] = color;
+                //
+                //colorArray[i] = color;这里用于随机生成颜色
+                colorArray[i] = '#2B2B2B'
             }
+            console.log(colorArray)
             return colorArray;
         }
 
@@ -240,12 +236,9 @@ export default class Draw {
 
         //下面是变得部分,这里我们需要思考好需要传入的数据格式是什么样子的,获取到了相关数据
         this.getChart = function () {
-            //    console.log(that.array)
             // 获取点数组
             const newarray = that.array.feature.data;
             //这里是获取了860个点
-            // console.log(newarray)
-            //   console.log(svg)
 
             //打点完成后
             svg.append('g').attr('fill', 'white').attr('stroke', 'white').attr('stroke-width', 2).selectAll('circle').data(newarray).enter().append("circle").attr('cx', d => xScale(d.date)).attr('cy', d => yScale(d.station)).attr('r', 1).attr('transform', `translate(${margin.left},${margin.top})`)
@@ -267,14 +260,11 @@ export default class Draw {
                 AllCar.push(mid);
             }
             // let test=AllCar
-            // console.log(test)
-            //  console.log(AllCar)
             //先获取到所有的car_id
             let car_id_array = []
             for (let i = 0; i < AllCar.length; i++) {
                 car_id_array.push(AllCar[i][0].car_id)
             }
-            // console.log(car_id_array)
             //也就是说一共有18条线
             //生成一个对象即可
              yingshe={}
@@ -282,7 +272,6 @@ export default class Draw {
             {
                 yingshe[car_id_array[i]]=i
             }
-            // console.log(yingshe)
 
             window.wantData=yingshe
             
@@ -290,17 +279,12 @@ export default class Draw {
             
             //定义一个新的颜色器
             var newcolors=d3.interpolateTurbo;
-            // console.log(newcolors)
-
 
             let cArray = that.getColorArray(AllCar.length);
-
-
-
-
+            
+            console.log(AllCar);
             for (var i = 0; i < AllCar.length; i++) {
                 let nrarray = AllCar[i]
-                // console.log(nrarray)
                 //有中间出现的0个数将其进行划分
                 var count = 0;
                 for (var k = 0; k < nrarray.length; k++) {
@@ -308,11 +292,11 @@ export default class Draw {
                         count++;
                     }
                 }
-                // console.log(count);//表示分为几段
 
                 if ((count <= 1 && nrarray[0].station == 0)) {
                     svg.append('path').datum(nrarray).attr('d', line)
-                        .attr('fill', 'none').attr('stroke', (d)=>newcolors(yingshe[d[0].car_id]/18)).attr('stroke-width', 2.5)
+                        .attr('fill', 'none').attr('stroke', '#2B2B2B').attr('stroke-width', 2.5) 
+                        //.attr('fill', 'none').attr('stroke', (d)=>newcolors(yingshe[d[0].car_id]/18)).attr('stroke-width', 2.5) 改变颜色
                         .attr('transform', `translate(${margin.left},${margin.top})`)
                         .attr('stroke-opacity',0.6)
                         // .attr('id',(d,i)=>d[0].car_id)
@@ -320,8 +304,10 @@ export default class Draw {
                         
                 }
                 else if (count == 0) {
-                    svg.append('path').datum(nrarray).attr('d', line).attr('fill', 'none').attr('stroke', (d)=>newcolors(yingshe[d[0].car_id]/18)).attr('stroke-width', 2.5).attr('transform', `translate(${margin.left},${margin.top})`)
+                    // 改变path颜色
+                    //svg.append('path').datum(nrarray).attr('d', line).attr('fill', 'none').attr('stroke', (d)=>newcolors(yingshe[d[0].car_id]/18)).attr('stroke-width', 2.5).attr('transform', `translate(${margin.left},${margin.top})`)
                         // .attr('id',(d,i)=>d[0].car_id)
+                        svg.append('path').datum(nrarray).attr('d', line).attr('fill', 'none').attr('stroke', '#2B2B2B').attr('stroke-width', 2.5).attr('transform', `translate(${margin.left},${margin.top})`)
                         .attr('stroke-opacity',0.6)
                         .append('title').text((d, i) => d[0].car_id)
                 }
@@ -333,7 +319,6 @@ export default class Draw {
                             index.push(p)
                         }
                     }
-                    // console.log(index)
                     let qiege = []
                     //本身还有两个切割点
                     let p1 = index[0];
@@ -349,14 +334,10 @@ export default class Draw {
                     let p2 = nrarray.length - index[q];
                     qiege.push(p2)
 
-                    // console.log(qiege)
-
 
                     //进行切割,验证成功
                     let newA = []
                     newA = chunk(nrarray, qiege)
-
-
 
                     var a = d3.rgb(255, 0, 0)//红色
                     var b = d3.rgb(0, 255, 0)//绿色
@@ -364,7 +345,8 @@ export default class Draw {
 
                     //根据里面的小数组来分别画path
                     for (let r = 0; r < newA.length; r++) {
-                        svg.append('path').datum(newA[r]).attr('d', line).attr('fill', 'none').attr('stroke', (d)=>newcolors(yingshe[d[0].car_id]/18)).attr('stroke-width', 2.5).attr('transform', `translate(${margin.left},${margin.top})`)
+                        //svg.append('path').datum(newA[r]).attr('d', line).attr('fill', 'none').attr('stroke', (d)=>newcolors(yingshe[d[0].car_id]/18)).attr('stroke-width', 2.5).attr('transform', `translate(${margin.left},${margin.top})`)
+                        svg.append('path').datum(newA[r]).attr('d', line).attr('fill', 'none').attr('stroke', '#2B2B2B').attr('stroke-width', 2.5).attr('transform', `translate(${margin.left},${margin.top})`)
                             // .attr('id',(d,i)=>d[0].car_id)
                             .attr('stroke-opacity',0.6)
                             .append('title').text((d, i) => d[0].car_id)
@@ -378,12 +360,9 @@ export default class Draw {
 
         //这里我们可以根据下行线的数组画图
         this.getnewChart = function () {
-            //    console.log(that.array)
             // 获取点数组
             const newarray = that.array.feature.data;
             //这里是获取了860个点
-            // console.log(newarray)
-            //   console.log(svg)
 
             //打点完成后
             svg.append('g').attr('fill', 'white').attr('stroke', 'white').attr('stroke-width', 2).selectAll('circle').data(newarray).enter().append("circle").attr('cx', d => xScale(d.date)).attr('cy', d => yScale(d.station)).attr('r', 1).attr('transform', `translate(${margin.left},${margin.top})`)
@@ -403,11 +382,8 @@ export default class Draw {
                     }
                 }
                 AllCar.push(mid);
-                // console.log(AllCar)
             }
             let test = AllCar
-            // console.log(test)
-            // console.log(window.wantData)
             let kw=window.wantData
 
             //34就是终点站的车站，所以这里应该写一个方法获取到这条线路的终点
@@ -418,7 +394,6 @@ export default class Draw {
                 }
             }
             let uuu = Math.max(...keee)
-            // console.log(uuu)
 
             let cArray = that.getColorArray(AllCar.length);
             var newcolors=d3.interpolateTurbo;
@@ -428,24 +403,19 @@ export default class Draw {
             for (let b = 0; b < newarray.length; b++) {
                 carArray.push(newarray[b].car_id)
             }
-            // console.log(carArray)
             let realcar = []
             for (let i = 0; i < carArray.length; i++) {
                 if (realcar.indexOf(carArray[i]) == -1) {
                     realcar.push(carArray[i])
                 }
             }
-            // console.log(realcar)
             for (let i = 0; i < realcar.length; i++) {
                 realcar[i] = parseFloat(realcar[i])
             }
-            // console.log(realcar)
 
             //得到站点数组最大值和最小值
             let carmin = Math.max(...realcar)
             let carmax = Math.min(...realcar)
-            // console.log(carmax)
-            // console.log(carmin)
 
             //创建一个线性映射器
             let newline = d3.scaleLinear().domain([carmin, carmax]).range([0, 1])
@@ -460,49 +430,31 @@ export default class Draw {
                     newAllCar.push(AllCar[i])
                 }
             }
-
-            // console.log(that.$store.state.count)
-
             //先获取到所有的car_id
             let car_id_array = []
             for (let i = 0; i < newAllCar.length; i++) {
                 car_id_array.push(newAllCar[i][0].car_id)
             }
-            // // console.log(car_id_array)
-            // console.log(that.$store.state.count)
-            
-
-
             for (var u = 0; u < newAllCar.length; u++) {
                 var ke = newAllCar[u]
-                // console.log(ke)
-                // if(JSON.stringify(ke)==='[]')
-                // {
-                //  console.log(1123)
-                //  ke.
-                // }
-
                 let bin = 0;
                 for (let r = 0; r < ke.length; r++) {
                     if (ke[r].station == uuu) {
                         bin++;
                     }
                 }
-                // console.log(bin);
                 //这里定义颜色插值
                 let a = d3.rgb(255, 0, 0);
                 let b = d3.rgb(0, 255, 0);
 
                 let compute = d3.interpolate(a, b)
 
-
-
-                // console.log(ke)
                 //按照car-id来进行渐变
 
 
                 if (bin <= 1) {
-                    let k1 = svg.append('path').datum(ke).attr('d', line).attr('fill', 'none').attr('stroke', (d)=>newcolors(kw[d[0].car_id]/18)).attr('stroke-width', 2.5).attr('transform', `translate(${margin.left},${margin.top})`)
+                    //let k1 = svg.append('path').datum(ke).attr('d', line).attr('fill', 'none').attr('stroke', (d)=>newcolors(kw[d[0].car_id]/18)).attr('stroke-width', 2.5).attr('transform', `translate(${margin.left},${margin.top})`)
+                    let k1 = svg.append('path').datum(ke).attr('d', line).attr('fill', 'none').attr('stroke', '#2B2B2B').attr('stroke-width', 2.5).attr('transform', `translate(${margin.left},${margin.top})`)
                     .attr('stroke-opacity',0.6)     
                     .append('title').text((d, i) => d[0].car_id)
 
@@ -518,7 +470,6 @@ export default class Draw {
                             index.push(p + 1)
                         }
                     }
-                    // console.log(index)
                     let qiege = []
                     //本身还有两个切割点
                     let p1 = index[0];
@@ -534,14 +485,11 @@ export default class Draw {
                     let p2 = ke.length - index[q];
                     qiege.push(p2)
 
-                    // console.log(qiege)
-
 
                     //进行切割,验证成功
                     let newA = []
                     newA = chunk(ke, qiege)
 
-                    // console.log(newA)
                     let nnewA = []
                     for (let i = 0; i < newA.length; i++) {
                         if (JSON.stringify(newA[i]) === '[]') {
@@ -552,10 +500,10 @@ export default class Draw {
                         }
                     }
 
-                    // console.log(newA)
                     //根据里面的小数组来分别画path
                     for (let r = 0; r < nnewA.length; r++) {
-                        let d2 = svg.append('path').datum(nnewA[r]).attr('d', line).attr('fill', 'none').attr('stroke', (d)=>newcolors(kw[d[0].car_id]/18)).attr('stroke-width', 2.5).attr('transform', `translate(${margin.left},${margin.top})`)
+                        //let d2 = svg.append('path').datum(nnewA[r]).attr('d', line).attr('fill', 'none').attr('stroke', (d)=>newcolors(kw[d[0].car_id]/18)).attr('stroke-width', 2.5).attr('transform', `translate(${margin.left},${margin.top})`)
+                        let d2 = svg.append('path').datum(nnewA[r]).attr('d', line).attr('fill', 'none').attr('stroke', '#2B2B2B').attr('stroke-width', 2.5).attr('transform', `translate(${margin.left},${margin.top})`)
                         .attr('stroke-opacity',0.6)   
                         .append('title').text((d, i) => d[0].car_id)
 

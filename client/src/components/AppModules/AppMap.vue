@@ -45,7 +45,7 @@ export default {
   },
   mounted() {
      
-     
+     console.log(4)
      let width=500;
      let height=500;
      let marign={top:10,bottom:10,left:10,right:10}
@@ -57,22 +57,16 @@ export default {
      .attr('y',(d,i)=>i*15+99).attr('width',30).attr('height',5).attr('fill',(d,i)=>{
         return color[i]
      })
-    
-     let text1=newsvg.append('g').selectAll('text').data(['Bus Station','Reliability','-0.5 - 0.2','-0.2 - 0.1',"+0.1 - 0.5"]).join('text').attr('x',95).attr('y',(d,i)=>i*15+73).text((d)=>d).attr('font-size',12).attr('textLength',56)
-     
-    //  let text2=newsvg.append('g').selectAll('text').data(['Reliability']).join('text').attr('x',30).attr('y',(d,i)=>i*10).text((d)=>d).attr('font-size',12)
+
+     let text1=newsvg.append('g').selectAll('text').data(['Bus Station','Reliability','1 - 1.5','0.5 - 1',"0 - 0.5"]).join('text').attr('x',95).attr('y',(d,i)=>i*15+73).text((d)=>d).attr('font-size',12).attr('textLength',56)
      
      let img1=newsvg.append('g').append('image').attr('xlink:href','http://localhost:8080/static/公交车.png').attr('width',20).attr('height',20).attr('x',60).attr('y',60);
     
      document.getElementById('newfeatures').innerHTML='Current Line: '+'31';
 
-    // this.map_config();
-    // this.map_points();
-    // this.map_lines()
+
      var that=this;
-    // this.map_config();
-    // this.map_points();
-    // this.map_lines()
+
         var data1=this.$axios.get('http://localhost:8080/static/location.json').then((data)=>{
           let nee=data.data;
           for(var i=0;i<nee.length;i++)
@@ -86,7 +80,6 @@ export default {
               let zzhuanhuan=GTB.bd_encrypt(zhuanhuan)
               nee[i].newPoint=zzhuanhuan;
           }
-        //   console.log(nee)//这里有12811个点,里面有重复的，我们只去第一个
           let newObject={}
           for(let u=0;u<nee.length;u++)
           {
@@ -96,10 +89,10 @@ export default {
                    newObject[nee[u].station_name]=nee[u]
               }
           }
-        //   console.log(newObject)
-        //   console.log(Object.values(newObject))
+
           let realdata=Object.values(newObject)
-        //   console.log(realdata)
+          
+          console.log(1)
 
           //获得1452个站点的经纬数组
           let geoArray=[]
@@ -107,14 +100,8 @@ export default {
           {
               geoArray.push(realdata[p].newPoint)
           }
-        //   console.log(geoArray)
 
           //这个时候调用我们的绘制多点接口
-        //   const pointMap=new Point.constructor(12,geoArray,access,"map",center,zoom).init().addPoints();
-
-
-
-           
       }) 
 
 
@@ -127,65 +114,37 @@ export default {
 
      const csvFilePath='http://localhost:8080/static/busdata_31_0.csv';
         //  const jsonObj=csv().fromFile(csvFilePath)
-        //  console.log(jsonObj);
          let nw=d3.csv(csvFilePath).then(data=>{
          let nw=data;
          //一条上行线路的轨迹数据
-        //  console.log(nw)
          let nk=F1.F(nw)
-        //  console.log(nk)
-
          let nc=F1.P(nw)
-        //  console.log(nc)
-         
-
 
          //获得相关数据
          let my=d3.csv('http://localhost:8080/static/LINE_ASSESSMENT.csv').then(data=>{
                 let mydata=data;
-                // console.log(mydata)
-
-
                 that.$store.state.count=mydata;
                 // that.$store.commit('add',mydata)
-
-
          })
 
          //验证和数据是符合的
          let q=that.$store.state.count
-        //  console.log(q);
          let wanta=[]
          for(let i=0;i<q.length;i++)
          {
            let wanto={}
-          //  console.log(q[i]) 
            let str=q[i].source+'-'+q[i].target
            wanto['route']=str
            wanto['value']=parseFloat(q[i].value)
            wanta.push(wanto) 
          }
-        //  console.log(wanta)
          let a=wanta
-        //  console.log(a)
-        
 
-         
          let geoArray=[]
          for(let i=0;i<nc.length;i++)
          {
              geoArray.push(nc[i].point)
          }
-
-         
-         //去重
-        //  function unique(arr)
-        //  {
-        //      return Array.from(new Set(arr))
-        //  }
-
-        //  geoArray=unique(geoArray)
-        //  console.log(geoArray)
 
          //按照我们划分的好的数组来绘制轨迹和打点
          
@@ -200,8 +159,7 @@ export default {
          //先绘制轨迹,先获取对应格式的数组
          let newdata=new Line.constructor(center,access,zoom,"map",array,"310").SetArray();
 
-        //  console.log(newarray)
-        //  console.log(newdata)
+
         //  let w=["0-1","1-2","2-3","3-4"]
 
         //得到线路名
@@ -211,10 +169,7 @@ export default {
         {
             routeName.push(wz[q]['line-name'])
         }
-
-        // console.log(routeName)
-
-          
+        
          let newMap=new Line.constructor(center,access,zoom,"map",array,"310",geoArray).init() 
 
          
@@ -235,7 +190,7 @@ export default {
               let mid=a[i].route
               indexArray.push(mid)
          }
-        //  console.log(indexArray)
+
 
          //这里获得value数组
          let valueArray=[]
@@ -243,19 +198,17 @@ export default {
          {
                  valueArray.push(a[i].value)
          }
-        //  console.log(valueArray)
+
 
          for(let i=0;i<indexArray.length;i++)
          {
               let str=indexArray[i]
-              // console.log(str)
               for(let j=0;j<wanta.length;j++)
               {
                   if(wanta[j].route==str)
                   {
                      let nnewvalue=wanta[j].value
                      let nnewstr='route'+str
-                    //  console.log(nnewstr)
                      newMap.set(nnewstr,nnewvalue,valueArray)
                   }
               }
@@ -362,13 +315,13 @@ export default {
      *@param
      *@version V1.0.5
      */
+    
     map_lines(data) {
-
       let lines_features = [
         {
           type: "Feature",
           properties: {
-            color: "#F7455D", // red
+            color: "#F7F7F7", // red #F7455D
           },
           geometry: {
             type: "LineString",
@@ -387,7 +340,7 @@ export default {
         {
           type: "Feature",
           properties: {
-            color: "#33C9EB", // blue
+            color: "#33C9EB", // blue #33C9EB
           },
           geometry: {
             type: "LineString",

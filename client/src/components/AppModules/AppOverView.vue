@@ -8,22 +8,22 @@
       <div id="newpanel">
         <form>
          <label style="position:absolute;top:7px;left:35px"><b>Car_id:</b></label>
-           <Input v-model="value1" placeholder="输入车辆"  style="width:300px;position:absolute;left:135px;"/>
+           <Input v-model="value1" placeholder="car no."  style="width:300px;position:absolute;left:135px;"/>
         
          <label style="position:absolute;top:40px;left:35px"><b>Start Station:</b></label>
-          <Input v-model="value2" placeholder="输入起始站点" style="position:absolute;; left:135px; width: 300px ;top:36px" />
+          <Input v-model="value2" placeholder="start station" style="position:absolute;; left:135px; width: 300px ;top:36px" />
 
          <label style="position:absolute;top:75px;left:35px"><b>End Station:</b></label>
-          <Input v-model="value3" placeholder="输入到达站点" style="position:absolute;left:135px; width: 300px;top:72px" />
+          <Input v-model="value3" placeholder="target station" style="position:absolute;left:135px; width: 300px;top:72px" />
  
           <label style="position:absolute;top:113px;left:35px"><b>Start Time:</b></label>
-          <Input v-model="value4" placeholder="输入启程时间" style="position:absolute; left:135px; width: 300px;top:108px" />
+          <Input v-model="value4" placeholder="departure time" style="position:absolute; left:135px; width: 300px;top:108px" />
 
           <label style="position:absolute;top:149px;left:35px"><b>End Time:</b></label>
-          <input id="output" type="text" value=" 显示到达时间" style="position:absolute;left:135px; width: 300px;top:144px"  />
+          <input id="output" type="text" value="show arrival time" style="position:absolute;left:135px; width: 300px;top:144px"  />
 
 
-          <button @click="Commite" style="position:absolute;  left:0px;width:96px ;left:135px ;top:175px">输入</button>
+          <button @click="Commite" style="position:absolute;  left:0px;width:96px ;left:135px ;top:175px">Input</button>
 
         </form>
       </div>
@@ -59,17 +59,13 @@ export default {
     };
   },
   mounted() {
-            // console.log(parseFloat("06"))
   },
   methods: {
        Commite()
       {
-         console.log(this.value1)
 
         this.$axios.get('http://localhost:8080/static/PPF.json').then(data=>{
-          //  console.log(data)
            let array=data.data;
-          //  console.log(array)
 
            var width=500;
            var height=160;
@@ -80,31 +76,17 @@ export default {
            //建立坐标轴
            var svg=d3.select('#newmap').append('svg').attr('width',width).attr('height',height).attr('transform',`translate(${margin.left},${margin.top})`)
            //获取站点长度
-          //  for(let i in array)
-          //  {
-
-          //  }
 
           let station=Object.keys(array)
-          // console.log(station)
           let smin=Math.min(...station);
           let smax=Math.max(...station);
-          // console.log(smin)
-          // console.log(smax)
+
           
                    
-        //  svg
-        // .append("defs")
-        // .append("clipPath")
-        // .attr("id", "clipppf")
-        // .append("rect")
-        // .attr("x", 0)
-        // .attr("width", width+100)
-        // .attr("height", height+100);
+
 
           let g=svg.append('g').attr('id','main').attr('width',width).attr('height',height).attr('transform',`translate(${0},${5})`)
-          // .attr('transform',`translate(${40},${5})`)
-          // .attr("clip-path", "url(#clipppf)");
+
 
           //设置一个判断函数
           function PD(station,date,array)
@@ -132,7 +114,7 @@ export default {
           //获得时间数组
           //验证成功
           let newnow=PD(this.value2,this.value4,array)
-          // console.log(newnow)
+          console.log('newnow:', newnow)
           //表示后面将会从那个小时进行索引
           let index=''+parseFloat(newnow.substr(0,2))
 
@@ -172,7 +154,7 @@ export default {
            //获得坐标尺,验证成功
            var xScale=d3.scaleTime().domain([d3.timeParse("%H:%M:%S")(this.value4),d3.timeParse("%H:%M:%S")(array[this.value3][index][4])]).range([40,width-margin.right]);
            var yScale=d3.scaleLinear().domain([parseFloat(this.value2)-1,parseFloat(this.value3)+2]).range([innerHeight,0]);
-
+          console.log('domain:', parseFloat(this.value2)-1, '---', parseFloat(this.value3)+2)
            
            var xAxis=d3.axisBottom(xScale).ticks(10);
            g.append('g').call(xAxis).attr('transform',`translate(${0},${innerHeight})`)
@@ -192,28 +174,9 @@ export default {
             .attr("font-weight", "300")
             .text("Station")
             .classed("trend-type", true)
-            // .style("text-anchor", "middle")
             .attr("transform", "rotate(-90)")
         );
 
-
-        // g.append("g").call(yAxis, yScale)        
-        //     .call((g) =>
-        //     g
-        //     .select(".tick:last-of-type text")
-        //     .clone()
-        //     .attr("x", -31)
-        //     .attr('y', -33)
-        //     .attr("text-anchor", "start")
-        //     .attr("font-weight", "500")
-        //     .text("Station")
-        //     .classed("trend-type", true)
-        //     .style("text-anchor", "middle")
-        //     .attr("transform", "rotate(0)")
-        //    );
-      
-          //  d3.axisLeft(yScale).ticks(10);
-          //   g.append('g').call(yAxis)
 
           //现在开始绘制折线图
           //先得到所要数组
@@ -225,16 +188,13 @@ export default {
 
           //后面的点都取第三个值 为[2]
           for(let i=parseFloat(this.value2)+1;i<=parseFloat(this.value3);i++)
-          {
+          { 
             karray.push([i,array[i][parseFloat(newnow.substr(0,2))][2]]);
           }
 
 
-          // console.log(karray)
-
-
           g.append('g').attr('fill', 'white').attr('stroke', 'black').attr('stroke-width', 2).attr('stroke-opacity','0.8').selectAll('circle').data(karray).enter().append("circle")
-          .attr('cx', d => xScale(d3.timeParse("%H:%M:%S")(d[1]))).attr('cy', d => yScale(d[0])).attr('r', 2).attr('transform', `translate(${50},${5})`)
+          .attr('cx', d => xScale(d3.timeParse("%H:%M:%S")(d[1]))).attr('cy', d => yScale(d[0])).attr('r', 2).attr('transform', `translate(${0},${0})`)
 
 
           //得到一个想要的对象
@@ -251,42 +211,14 @@ export default {
           var line = d3.line().x(d => xScale(d3.timeParse("%H:%M:%S")(d.time))).y(d => yScale(d.station))
           
           //然后绘制折线
-           g.append('path').datum(warray).attr('d', line).attr('fill', 'none').attr('stroke','red').attr('stroke-width', 2.5).attr('stroke-opacity','0.5').attr('transform', `translate(${50},${5})`)
+           g.append('path').datum(warray).attr('d', line).attr('fill', 'none').attr('stroke','red').attr('stroke-width', 2.5).attr('stroke-opacity','0.5').attr('transform', `translate(${0},${0})`)
                         // .attr('id',(d,i)=>d[0].car_id)
           .attr('stroke-opacity',0.6)
           
-
-              //  const g=newsvg.append('g').selectAll('rect').data([1,2,3]).join('rect').attr('x',55)
-              // .attr('y',(d,i)=>i*15+99).attr('width',30).attr('height',5).attr('fill',(d,i)=>{
-              //      return color[i]
-              //  })
-          // let oo=[] 
-          // for(let i in array)
-          // {
-          //     if(i>)
-          //     {
-          //      let mid={}
-          //      mid.station=;
-          //      mid.value=array[]
-          //     }
-          // }
-          
           //然后绘制矩形
        
-      //  console.log(stations)
       let rectColor = ["#bf4063", "#ff8040", "#80ff00", "#0d8a20"];
 
-
-        // svg
-        // .selectAll("text")
-        // .data(['0.01 - 0.25','0.25 - 0.5','0.5 - 0.75','0.75 - 0.99'])
-        // .join("text")
-        // .text(d=>d)
-        // .attr("font-size", 9)
-        // .attr("x", (d, i) => i * 80 + 30)
-        // .attr("y", 9)
-        // .classed("trend-type", true)
-        // .style("text-anchor", "start");
         g.append('g').selectAll('text').data(['Predict Result']).join('text').text(d=>d)
         .attr("font-size", 13.5)
         .attr("x", 228.5)
@@ -318,7 +250,60 @@ export default {
         .classed("trend-type", true)
         .style("text-anchor", "start");
       
+      console.log('res', Object.keys(array).filter(d=>{
+            return (parseInt(d)>=parseInt(this.value2)&&(parseInt(d)<=parseInt(this.value3)))
+        }))
 
+      // this.value1 - car id
+      // this.value2 - start station
+      // time.value3 - end station
+      // this.value4 - start time
+
+      let drawdata = []
+      
+      let starttime = '',
+        hour = parseInt(this.value4), //get hour
+        time = this.value4 // full time used to compare
+      
+      for(let key in array){
+        //key -> station
+        //hour
+        //如果是目标站点内
+        if(parseInt(this.value2) <= parseInt(key) && parseInt(key) <= parseInt(this.value3)){
+          //直接索引时间，看是否满足条件（满足最小时间）
+          let temptime = d3.timeParse("%H:%M:%S")(time)
+          let comparedtime = d3.timeParse("%H:%M:%S")(array[key][hour][2])
+
+          if(temptime < comparedtime){
+            drawdata.push(array[key][hour])
+            time = array[key][hour][2]
+            //如果符合 则在该小时段内获取
+          } else {
+            let lentime = Object.keys(array[key])
+            if (hour+1 == array[key][lentime-1]){
+              //防止越界
+              drawdata.push(array[key][hour])
+              time = array[key][hour][2]
+            } else {
+              drawdata.push(array[key][hour+1])
+              time = d3.timeParse("%H:%M:%S")(array[key][hour+1][2])
+            }
+          }
+        }
+      }
+
+      let startnum = parseInt(this.value2)
+      let rr = drawdata.map(function(d,i){
+        return d.map((v,j) => {
+          return j < d.length - 1 ? {
+            name: parseInt(i)+startnum,
+            startTime: d3.timeParse("%H:%M:%S")(d[j]),
+            endTime: d3.timeParse("%H:%M:%S")(d[j+1])
+          } : null
+        }).filter((k) => k)
+      })
+
+      console.log('rr:', rr)
       let rect_g = g
         .append("g")
         .selectAll("g")
@@ -327,38 +312,25 @@ export default {
         }))
         .join("g")
         .attr("opacity", 0.7);
-        // console.log(Object.keys(array))
 
+      let yBarScale=d3.scaleLinear().domain([parseFloat(this.value2)-1,parseFloat(this.value3)+2]).range([140,0]);
 
-        // rect_g.append('g').selectAll('g').data((d)=>console.log(d))
-
+      console.log('yScale')
       rect_g.append("g")
         .selectAll("g")
-        .data((d) =>
-          Object.keys(array[d]).map((s) => {
-            return array[d][s]
-              .map((t, i) => {
-                return i < array[d][s].length - 1
-                  ? {
-                      name:  parseInt(d),
-                      startTime: d3.timeParse("%H:%M:%S")(t),
-                      endTime: d3.timeParse("%H:%M:%S")(array[d][s][i + 1]),
-                    }
-                  : null;
-              })
-              .filter((k) => k);
-          })
-        )
+        .data(rr)
         .join("g")
         .selectAll("rect")
-        .data(d =>d )
+        .data(d => d)
         .join("rect")
         .attr("x", (d) => xScale(d.startTime))
         .attr("y", (d) => yScale(d.name) - 2)
         .attr("fill", (d, i) => rectColor[i])
         .attr("width", (d,i) => xScale(d.endTime) - xScale(d.startTime))
         .attr("height", 4)
-        .attr('transform',`translate(${50},${5})`)
+        .style('opacity', 0.6)
+        //.attr('tranform', "translate(0px,-100px)")
+        .attr('transform',`translate(${0},${0})`)
         .on('mouseover',function(){
           d3.select('body').style('cursor','pointer')
           d3.select(this).transition().duration(200).attr('stroke','#000')
@@ -370,10 +342,8 @@ export default {
         
 
         //把最后的结果时间输入到
-        document.getElementById('output').value=" "+karray[karray.length-1][1]
 
-
-
+        document.getElementById('output').value = " "+drawdata[drawdata.length-1][2]
         })
       }
 

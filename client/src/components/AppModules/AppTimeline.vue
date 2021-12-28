@@ -29,15 +29,10 @@ export default {
 
     //得到数据
     this.$axios.get('http://localhost:8080/static/RIVER.json').then(data=>{
-          // console.log(data.data)
           let key=data.data;
-          // console.log(key)
           let time=key.ind_y;
-          // console.log(time)
           let station=key.ind_x
-          // console.log(station)
           let my=key.value;
-          // console.log(my)
           //先把time数组转换为我的那种形式
           let newtime=[]
           for(let i=0;i<time.length;i++)
@@ -53,7 +48,6 @@ export default {
               }
 
           }
-          // console.log(newtime)
           //用newtime和my组合为array的形式
           let array=[]
           for(let i=0;i<station.length;i++)
@@ -65,7 +59,6 @@ export default {
              }
              array.push(newobject)
           }
-          // console.log(array)
          Stream.getDraw(newtime,station,array)
     })
     
